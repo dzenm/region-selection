@@ -7,7 +7,7 @@
 ## 下载 （[查看最新版本](https://github.com/dzenm/region-selection/releases/latest)）
 
 ```groovy
-implementation 'com.github.dzenm:region-selection:1.0.0'
+implementation 'com.github.dzenm.region-selection:multi:1.0.0'
 ```
 
 ## 使用
