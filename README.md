@@ -2,7 +2,7 @@
 
 这是一个区域选择的工具
 
-![gif](https://github.com/dzenm/region-selection/tree/master/pic/pic.gif)
+![gif](https://github.com/dzenm/region-selection/blob/master/pic/pic.gif?raw=true)
 
 ## 下载 （[查看最新版本](https://github.com/dzenm/region-selection/releases/latest)）
 
