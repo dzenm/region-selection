@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="region_title">请选择所在的地区</string>
+    <string name="region_default_text">请选择</string>
+</resources>

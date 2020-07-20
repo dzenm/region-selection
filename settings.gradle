@@ -1,0 +1,4 @@
+rootProject.name='RegionSelection'
+include ':app'
+include ':multi'
+include ':single'

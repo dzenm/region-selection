@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RegionSelectionView">
+        <attr name="selectedTextColor" format="color|reference" />
+        <attr name="unselectedTextColor" format="color|reference" />
+        <attr name="title" format="string|reference" />
+        <attr name="isEnabledIndicator" format="boolean" />
+    </declare-styleable>
+</resources>
