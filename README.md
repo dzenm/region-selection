@@ -2,9 +2,9 @@
 
 这是一个区域选择的工具
 
-![gif](https://github.com/dzenm/region_selection/blob/master/pic/pic.gif)
+![gif](https://github.com/dzenm/region-selection/tree/master/pic/pic.gif)
 
-## 下载 （[查看最新版本](https://github.com/dzenm/region_selection/releases/latest)）
+## 下载 （[查看最新版本](https://github.com/dzenm/region-selection/releases/latest)）
 
 ```groovy
 implementation 'com.github.dzenm:region-selection:1.0.0'
