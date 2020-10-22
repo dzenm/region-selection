@@ -3,7 +3,7 @@ package com.dzenm.multi;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class RegionBean implements Parcelable {
+public class RegionData implements Parcelable {
 
     private String id;          // 当前id
     private String parentId;    // 父id
@@ -55,35 +55,35 @@ public class RegionBean implements Parcelable {
         dest.writeString(code);
     }
 
-    public RegionBean() {
+    public RegionData() {
 
     }
 
-    private RegionBean(Parcel in) {
+    private RegionData(Parcel in) {
         id = in.readString();
         parentId = in.readString();
         name = in.readString();
         code = in.readString();
     }
 
-    public static final Creator<RegionBean> CREATOR = new Creator<RegionBean>() {
+    public static final Creator<RegionData> CREATOR = new Creator<RegionData>() {
         @Override
-        public RegionBean createFromParcel(Parcel source) {
-            return new RegionBean(source);
+        public RegionData createFromParcel(Parcel source) {
+            return new RegionData(source);
         }
 
         @Override
-        public RegionBean[] newArray(int size) {
-            return new RegionBean[size];
+        public RegionData[] newArray(int size) {
+            return new RegionData[size];
         }
     };
 
-    public static RegionBean convert(String id, String parentId, String name, String code) {
-        RegionBean regionBean = new RegionBean();
-        regionBean.setId(id);
-        regionBean.setParentId(parentId);
-        regionBean.setName(name);
-        regionBean.setCode(code);
-        return regionBean;
+    public static RegionData convert(String id, String parentId, String name, String code) {
+        RegionData regionData = new RegionData();
+        regionData.setId(id);
+        regionData.setParentId(parentId);
+        regionData.setName(name);
+        regionData.setCode(code);
+        return regionData;
     }
 }

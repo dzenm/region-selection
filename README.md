@@ -23,8 +23,8 @@ implementation 'com.github.dzenm.region-selection:multi:1.0.0'
 ```java
 final RegionSelectionView regionView = findViewById(R.id.region_view);
 regionView.setOnSelectedListener(new RegionSelectionView.OnSelectedListener() {
-    public void onCompleted(RegionBean[] regionBeans) {
-        address.setText(getText(regionBeans));
+    public void onCompleted(RegionBean[] regionData) {
+        address.setText(getText(regionData));
     }
 });
 
@@ -34,9 +34,9 @@ regionView.setOnSelectedListener(new RegionSelectionView.OnSelectedListener() {
 new RegionSelectionDialog.Builder(MainActivity.this)
         .setOnSelectedListener(new RegionSelectionDialog.OnSelectedListener() {
             @Override
-            public void onCompleted(PopupWindow popupWindow, RegionBean[] regionBeans) {
+            public void onCompleted(PopupWindow popupWindow, RegionBean[] regionData) {
                 popupWindow.dismiss();
-                reselected.setText(getText(regionBeans));
+                reselected.setText(getText(regionData));
             }
         })
         .create(getWindow().getDecorView());

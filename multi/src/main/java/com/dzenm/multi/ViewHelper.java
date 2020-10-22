@@ -2,6 +2,7 @@ package com.dzenm.multi;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -82,6 +83,7 @@ class ViewHelper {
         titleParams.gravity = Gravity.CENTER;
         title.setLayoutParams(titleParams);
         title.setGravity(Gravity.CENTER);
+        title.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
         title.setTextSize(16);
 
         ImageView close = new ImageView(context);

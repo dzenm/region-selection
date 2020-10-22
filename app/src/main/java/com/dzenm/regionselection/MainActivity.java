@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.dzenm.multi.RegionBean;
+import com.dzenm.multi.RegionData;
 import com.dzenm.multi.RegionSelectionDialog;
 import com.dzenm.multi.RegionSelectionView;
 
@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
         // 使用View实现
         final RegionSelectionView regionView = findViewById(R.id.region_view);
         regionView.setOnSelectedListener(new RegionSelectionView.OnSelectedListener() {
-            public void onCompleted(RegionBean[] regionBeans) {
-                address.setText(getText(regionBeans));
+            public void onCompleted(RegionData[] regionData) {
+                address.setText(getText(regionData));
             }
         });
 
@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
                 new RegionSelectionDialog.Builder(MainActivity.this)
                         .setOnSelectedListener(new RegionSelectionDialog.OnSelectedListener() {
                             @Override
-                            public void onCompleted(PopupWindow popupWindow, RegionBean[] regionBeans) {
+                            public void onCompleted(PopupWindow popupWindow, RegionData[] regionData) {
                                 popupWindow.dismiss();
-                                reselected.setText(getText(regionBeans));
+                                reselected.setText(getText(regionData));
                             }
                         })
                         .create(getWindow().getDecorView());
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String getText(RegionBean[] regionBeans) {
+    private String getText(RegionData[] regionData) {
         StringBuilder sb = new StringBuilder();
-        for (RegionBean regionBean : regionBeans) {
-            sb.append(regionBean.getName()).append("-");
+        for (RegionData data : regionData) {
+            sb.append(data.getName()).append("-");
         }
         return sb.toString();
     }

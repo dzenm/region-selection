@@ -14,8 +14,7 @@ import androidx.annotation.ColorInt;
 
 public class RegionSelectionDialog {
 
-    private RegionSelectionDialog() {
-    }
+    private RegionSelectionDialog() { }
 
     public static class Builder implements RegionSelectionView.OnSelectedListener, RegionSelectionView.OnClosedListener {
 
@@ -106,8 +105,8 @@ public class RegionSelectionDialog {
         }
 
         @Override
-        public void onCompleted(RegionBean[] regionBeans) {
-            mOnSelectedListener.onCompleted(mPopupWindow, regionBeans);
+        public void onCompleted(RegionData[] regionData) {
+            mOnSelectedListener.onCompleted(mPopupWindow, regionData);
         }
 
         @Override
@@ -117,6 +116,6 @@ public class RegionSelectionDialog {
     }
 
     public interface OnSelectedListener {
-        void onCompleted(PopupWindow popupWindow, RegionBean[] regionBeans);
+        void onCompleted(PopupWindow popupWindow, RegionData[] regionData);
     }
 }

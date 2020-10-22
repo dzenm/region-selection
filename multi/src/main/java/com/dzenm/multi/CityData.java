@@ -19,16 +19,15 @@ import java.util.List;
 /**
  * 预设数据
  */
-public class DefaultData implements RegionSelectionView.OnTabSelectedListener {
+class CityData implements RegionSelectionView.OnTabSelectedListener {
 
     /**
      * 预置的数据
      */
-    private RegionManagerBean mPreData;
+    private RegionManagerData mPreData;
     private Context mContext;
-    private int mIndex = 1;
 
-    public DefaultData(Context context) {
+    public CityData(Context context) {
         mContext = context;
     }
 
@@ -36,34 +35,29 @@ public class DefaultData implements RegionSelectionView.OnTabSelectedListener {
      * 获取本地提供的预置数据
      */
     private void provideDataSource() {
-        StringBuilder json = new StringBuilder();
         try (InputStream inputStream = mContext.getAssets().open("address.json")) {
+            StringBuilder json = new StringBuilder();
             BufferedReader addressJsonStream = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = addressJsonStream.readLine()) != null) {
                 json.append(line);
             }
+            // 将数据转换为对象
+            mPreData = new Gson().fromJson(json.toString(), RegionManagerData.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // 将数据转换为对象
-        mPreData = new Gson().fromJson(json.toString(), RegionManagerBean.class);
     }
 
     @Override
-    public void onTabSelected(RegionSelectionView view, int position, @Nullable RegionBean superiorRegionBean) {
+    public void onTabSelected(RegionSelectionView view, int position, @Nullable RegionData superiorRegionData) {
         if (mPreData == null) {
             provideDataSource();
         }
-        if (position == 0 || superiorRegionBean == null) {
+        if (position == 0 || superiorRegionData == null) {
             view.updateData(convert(mPreData.getProvince()));
         } else {
-            view.updateData(getPreSelectedData(mPreData, position, superiorRegionBean.getId()));
-            if (mIndex % 2 == 0) {
-            } else {
-
-            }
-            mIndex++;
+            view.updateData(getPreSelectedData(mPreData, position, superiorRegionData.getId()));
         }
     }
 
@@ -74,65 +68,65 @@ public class DefaultData implements RegionSelectionView.OnTabSelectedListener {
      * @return 对应的预置数据
      */
     private @NonNull
-    List<RegionBean> getPreSelectedData(RegionManagerBean preData, int position, String parentId) {
-        List<RegionBean> regionBeans = new ArrayList<>();
-        List<RegionBean> allRegionBean = new ArrayList<>();
+    List<RegionData> getPreSelectedData(RegionManagerData preData, int position, String parentId) {
+        List<RegionData> regionData = new ArrayList<>();
+        List<RegionData> allRegionData = new ArrayList<>();
         if (position == 0) {
             return convert(preData.getProvince());
         } else if (position == 1) {
-            allRegionBean = convert(preData.getCity());
+            allRegionData = convert(preData.getCity());
         } else if (position == 2) {
-            allRegionBean = convert(preData.getDistrict());
+            allRegionData = convert(preData.getDistrict());
         }
-        for (RegionBean regionBean : allRegionBean) {
-            if (regionBean.getParentId().equals(parentId)) {
-                regionBeans.add(regionBean);
+        for (RegionData data : allRegionData) {
+            if (data.getParentId().equals(parentId)) {
+                regionData.add(data);
             }
         }
-        return regionBeans;
+        return regionData;
     }
 
-    private List<RegionBean> convert(List<DefaultRegionBean> list) {
-        List<RegionBean> regionBeans = new ArrayList<>(list.size());
+    private List<RegionData> convert(List<DefaultRegionData> list) {
+        List<RegionData> regionData = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); i++) {
-            DefaultRegionBean bean = list.get(i);
-            regionBeans.add(RegionBean.convert(bean.getId(), bean.getParentId(), bean.getName(),"0"));
+            DefaultRegionData bean = list.get(i);
+            regionData.add(RegionData.convert(bean.getId(), bean.getParentId(), bean.getName(), "0"));
         }
-        return regionBeans;
+        return regionData;
     }
 
-    public static class RegionManagerBean implements Serializable {
+    private static class RegionManagerData implements Serializable {
 
-        private List<DefaultRegionBean> province;
-        private List<DefaultRegionBean> city;
-        private List<DefaultRegionBean> district;
+        private List<DefaultRegionData> province;
+        private List<DefaultRegionData> city;
+        private List<DefaultRegionData> district;
 
-        List<DefaultRegionBean> getProvince() {
+        List<DefaultRegionData> getProvince() {
             return province;
         }
 
-        public void setProvince(List<DefaultRegionBean> province) {
+        public void setProvince(List<DefaultRegionData> province) {
             this.province = province;
         }
 
-        List<DefaultRegionBean> getCity() {
+        List<DefaultRegionData> getCity() {
             return city;
         }
 
-        public void setCity(List<DefaultRegionBean> city) {
+        public void setCity(List<DefaultRegionData> city) {
             this.city = city;
         }
 
-        List<DefaultRegionBean> getDistrict() {
+        List<DefaultRegionData> getDistrict() {
             return district;
         }
 
-        public void setDistrict(List<DefaultRegionBean> district) {
+        public void setDistrict(List<DefaultRegionData> district) {
             this.district = district;
         }
     }
 
-    static class DefaultRegionBean {
+    private static class DefaultRegionData {
 
         @SerializedName("i")
         private String id;          // 当前id

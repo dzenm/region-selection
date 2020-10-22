@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class RegionSelectionView extends FrameLayout {
 
-    private final static String TAG = "RegionView";
+    private final static String TAG = RegionSelectionView.class.getSimpleName();
     /**
      * Tab切换时, 数据更新的延时的时间
      */
@@ -64,7 +64,7 @@ public class RegionSelectionView extends FrameLayout {
      */
     private final static int HANDLER_DATA = 0x01;
 
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * 选中的颜色, 每个正在选择的区域Tab的颜色，列表选中的位置的颜色, setup by {@link #setSelectedTextColor(int)}
@@ -82,12 +82,10 @@ public class RegionSelectionView extends FrameLayout {
      * 每个区域选择Tab中提示的标题
      */
     private CharSequence mTabTitle;
-
     /**
      * 根布局
      */
     private LinearLayout mDecorView;
-
     /**
      * Tab显示的数量, 能够选择的级别的数量, setup by {@link #setTabCount(int)}
      */
@@ -96,7 +94,6 @@ public class RegionSelectionView extends FrameLayout {
      * 当前选中的Tab所在的位置
      */
     private int mSelectedTabPosition = 0;
-
     /**
      * Tab的父布局, 管理Tab的动态显示
      */
@@ -113,16 +110,14 @@ public class RegionSelectionView extends FrameLayout {
      * 当前选中的Tab所在的位置的指示器
      */
     private View mSelectedTabIndicator;
-
     /**
      * 展示在recyclerview的数据
      */
-    private List<RegionBean> mData;
+    private List<RegionData> mData = new ArrayList<>();
     /**
      * 选中的Tab中对应的数据
      */
-    private List<SelectedTabData> mSelectedTabData;
-
+    private List<SelectedTabData> mSelectedTabData = new ArrayList<>();
     /**
      * 是否设置选中的指示器, setup by {@link #setEnabledIndicator(boolean)}
      */
@@ -133,7 +128,6 @@ public class RegionSelectionView extends FrameLayout {
      */
     private boolean isTabClick = false;
 
-    // 多级 单级
     private OnSelectedListener mOnSelectedListener;
     private OnClosedListener mOnClosedListener;
     private OnTabSelectedListener mOnTabSelectedListener;
@@ -212,28 +206,29 @@ public class RegionSelectionView extends FrameLayout {
         this.mOnTabSelectedListener = listener;
     }
 
-    public void updateData(final List<RegionBean> regionBeans) {
+    public RegionSelectionView getRegionSelectionView() {
+        return this;
+    }
+
+    public void updateData(final List<RegionData> regionData) {
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 Message message = Message.obtain();
                 message.what = HANDLER_DATA;
-                message.obj = regionBeans;
+                message.obj = regionData;
                 mWeakHandler.sendMessage(message);
             }
         }, DEFAULT_DELAY_MILLIS);
     }
 
     private void initData() {
-        mData = new ArrayList<>();
-        mSelectedTabData = new ArrayList<>();
-
         // 初始化默认的本地数据  也提供了方法接收外面数据
         post(new Runnable() {
             @Override
             public void run() {
                 if (mOnTabSelectedListener == null) {
-                    mOnTabSelectedListener = new DefaultData(mContext);
+                    mOnTabSelectedListener = new CityData(mContext);
                 }
                 if (mTabCount == 0) {
                     return;
@@ -282,11 +277,11 @@ public class RegionSelectionView extends FrameLayout {
     private void verifySelectedResult() {
         if (mSelectedTabData.size() == mTabCount && mSelectedTabData.get(mTabCount - 1).isSelected) {
             if (mOnSelectedListener != null) {
-                RegionBean[] regionBeans = new RegionBean[mTabCount];
+                RegionData[] regionData = new RegionData[mTabCount];
                 for (int i = 0; i < mSelectedTabData.size(); i++) {
-                    regionBeans[i] = mSelectedTabData.get(i).regionBean;
+                    regionData[i] = mSelectedTabData.get(i).regionData;
                 }
-                mOnSelectedListener.onCompleted(regionBeans);
+                mOnSelectedListener.onCompleted(regionData);
             }
         } else {
             Toast.makeText(mContext, "请选择完整的地址", Toast.LENGTH_SHORT).show();
@@ -303,18 +298,18 @@ public class RegionSelectionView extends FrameLayout {
 
         // 重置RecyclerView显示的数据
         int position = isLastTab() && !isTabClick ? mSelectedTabPosition + 1 : mSelectedTabPosition;
-        RegionBean superiorRegionBean = position == 0
+        RegionData superiorRegionData = position == 0
                 ? null
-                : getSelectedTabData(position - 1).regionBean;
+                : getSelectedTabData(position - 1).regionData;
         Log.d(TAG, "tab selected position: " + position);
-        mOnTabSelectedListener.onTabSelected(this, position, superiorRegionBean);
+        mOnTabSelectedListener.onTabSelected(this, position, superiorRegionData);
     }
 
     /**
      * 接收获取到的显示在页面的数据, 并进行更新页面
      */
     @SuppressLint("HandlerLeak")
-    private Handler mWeakHandler = new Handler() {
+    private final Handler mWeakHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -328,9 +323,9 @@ public class RegionSelectionView extends FrameLayout {
                 }
 
                 // 更新新Tab对应的数据
-                List<RegionBean> regionBeans = (List<RegionBean>) msg.obj;
+                List<RegionData> regionData = (List<RegionData>) msg.obj;
                 mData.clear();
-                mData.addAll(regionBeans);
+                mData.addAll(regionData);
                 mAdapter.notifyDataSetChanged();
 
                 // 如果是向前选择则滚动到这个位置
@@ -397,10 +392,10 @@ public class RegionSelectionView extends FrameLayout {
             Log.d(TAG, "onBindViewHolder SelectedTabPosition: " + mSelectedTabPosition);
             // 设置选中效果的颜色
             SelectedTabData selectedData = getSelectedTabData(mSelectedTabPosition);
-            RegionBean selectedRegionBean = selectedData.regionBean;
+            RegionData selectedRegionData = selectedData.regionData;
             if (selectedData.isSelected
-                    && selectedRegionBean != null
-                    && mData.get(position).getId().equals(selectedRegionBean.getId())) {
+                    && selectedRegionData != null
+                    && mData.get(position).getId().equals(selectedRegionData.getId())) {
                 holder.title.setTextColor(mSelectedTextColor);
                 holder.selected.setVisibility(View.VISIBLE);
             }
@@ -417,17 +412,17 @@ public class RegionSelectionView extends FrameLayout {
             Log.d(TAG, "onBindViewHolder click SelectedTabPosition: " + selectedTabPosition);
 
             // 获取列表选中的数据并更新显示结果
-            RegionBean regionBean = mData.get(position);
+            RegionData regionData = mData.get(position);
             holder.title.setTextColor(mSelectedTextColor);
             holder.selected.setVisibility(View.VISIBLE);
 
             // 更新选中的Tab对应保存的列表中的数据
             SelectedTabData selectedData = getSelectedTabData(selectedTabPosition);
             notifyItemRangeChanged(selectedData.position, 1);
-            selectedData.regionBean = regionBean;
+            selectedData.regionData = regionData;
             selectedData.position = position;
             selectedData.isSelected = true;
-            selectedData.title = regionBean.getName();
+            selectedData.title = regionData.getName();
             mSelectedTabData.set(selectedTabPosition, selectedData);
             notifyItemRangeChanged(position, 1);
 
@@ -558,7 +553,7 @@ public class RegionSelectionView extends FrameLayout {
      */
     private static class SelectedTabData {
         private CharSequence title = "";
-        private RegionBean regionBean = null;
+        private RegionData regionData = null;
         private int position = DEFAULT_INDEX;
         private boolean isSelected = false;
     }
@@ -567,7 +562,7 @@ public class RegionSelectionView extends FrameLayout {
      * 选中完成按钮回调
      */
     public interface OnSelectedListener {
-        void onCompleted(RegionBean[] regionBeans);
+        void onCompleted(RegionData[] regionData);
     }
 
     /**
@@ -587,8 +582,8 @@ public class RegionSelectionView extends FrameLayout {
          *
          * @param view               当前View
          * @param position           选中Tab的位置
-         * @param superiorRegionBean 上一级的数据。
+         * @param superiorRegionData 上一级的数据。
          */
-        void onTabSelected(RegionSelectionView view, int position, @Nullable RegionBean superiorRegionBean);
+        void onTabSelected(RegionSelectionView view, int position, @Nullable RegionData superiorRegionData);
     }
 }
